@@ -1,18 +1,20 @@
-branch="new-guest-access"
+#!/bin/bash
+# Dependencies: npm, git
+
+branch=$1
 
 mkdir $branch
-cd $branch
+echo "Building..." >> $branch/index.html
 
-# Install dependencies:
-#  - git
-#  - npm
+mkdir $branch.building
+cd $branch.building
 
 git clone https://github.com/vector-im/riot-web.git
 git clone https://github.com/matrix-org/matrix-react-sdk.git
 git clone https://github.com/matrix-org/matrix-js-sdk.git
 
-(cd riot-web && git checkout $branch)
-(cd matrix-react-sdk && git checkout $branch)
+(cd riot-web && git checkout $branch || git checkout develop)
+(cd matrix-react-sdk && git checkout $branch || git checkout develop)
 (cd matrix-js-sdk && git checkout $branch || git checkout develop)
 
 (cd riot-web && npm install)
@@ -36,3 +38,6 @@ rm -rf matrix-react-sdk/node_modules/matrix-js-sdk
 (cd matrix-js-sdk && npm run build)
 (cd matrix-react-sdk && npm run build)
 (cd riot-web && npm run build)
+
+rm -rf $branch
+mv $branch.building $branch
